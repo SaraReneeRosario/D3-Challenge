@@ -14,7 +14,7 @@ var height = svgHeight - margin.top - margin.bottom;
 
 // Creating and appending SVG bucket that will hold the chart
 
-var svg = d3
+const svg = d3
     .select("#scatter")
     .append("svg")
     .attr("width", svgWidth)
@@ -28,7 +28,7 @@ let chosenYAxis = "healthcare";
 
 (async function(){
     // Importing the data
-    var stateData = await d3.csv("assests/data/data.csv");
+    var stateData = await d3.csv("assets/data/data.csv");
     // parsing the data and re-casting as numeric data type
     stateData.forEach(function(data) {
         data.poverty = +data.poverty;
@@ -46,7 +46,7 @@ let leftAxis = d3.axisLeft(yLinearScale);
 
 //Appending axes to chart
 let xAxis = chartGroup.append("g")
-    .attr("transform", `translate(0, ${heoght})`)
+    .attr("transform", `translate(0, ${height})`)
     .call(bottomAxis);
 
 let yAxis = chartGroup.append("g")
@@ -58,37 +58,38 @@ let circlesGroup = chartGroup.selectAll("g circle")
     .enter()
     .append("g");
 
-let circlesXY = circleGroups.append("circle")
+let circlesXY = circlesGroup.append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d[chosenYAxis]))
     .attr("r", 15)
     .classed("stateCircle", true);
 
-let circleText = circleGroup.append("text")
+let circleText = circlesGroup.append("text")
     .text(d => d.abbr)
     .attr("dx", d => xLinearScale(d[chosenXAxis]))
     .attr("dy", d => yLinearScale(d[chosenYAxis]))
+    .style("text-anchor", "middle")
     .classed("stateTest", true);
 
 // Creating groups for x axis labels
 var xLabelsGroup = chartGroup.append("g")
     .attr("transform", `translate(${width/2}, ${height})`);
 
-var povertyLabel = xlabelsGroup.append("text")
+var povertyLabel = xLabelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 40)
     .attr("value", "poverty") //this should grab the value for event listener. we'll see 
-    .tetx("In Poverty (%)")
+    .text("In Poverty (%)")
     .classed("active", true);
 
-var ageLabel = xlabelsGroup.append("text")
+var ageLabel = xLabelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 60)
     .attr("value", "age") // this should grab the value for event listener. we'll see
     .text("Age (Median)")
     .classed("inactive", true);
 
-var incomeLabel = xlabelsGroup.append("text")
+var incomeLabel = xLabelsGroup.append("text")
     .attr("x", 0)
     .attr("y", 80)
     .attr("value", "income") // this should grab the value for event listener. we'll see
@@ -96,9 +97,9 @@ var incomeLabel = xlabelsGroup.append("text")
     .classed("inactive", true);
 
 // Create group for 3 y-axis labels
-var ylabelsGroup = chartGroup.append("g");
+var yLabelsGroup = chartGroup.append("g");
 
-var healthcareLabel = ylabelsGroup.append("text")
+var healthcareLabel = yLabelsGroup.append("text")
     .attr("transform", "rotate(-90)")
     .attr("x", -(height / 2))
     .attr("y", -40)
@@ -106,7 +107,7 @@ var healthcareLabel = ylabelsGroup.append("text")
     .text("Lacks Healthcare (%)")
     .classed("active", true);
 
-var smokesLabel = ylabelsGroup.append("text")
+var smokesLabel = yLabelsGroup.append("text")
     .attr("transform", "rotate(-90)")
     .attr("x", -(height / 2))
     .attr("y", -60)
@@ -114,7 +115,7 @@ var smokesLabel = ylabelsGroup.append("text")
     .text("Smokes (%)")
     .classed("inactive", true);
 
-var obeseLabel = ylabelsGroup.append("text")
+var obeseLabel = yLabelsGroup.append("text")
     .attr("transform", "rotate(-90)")
     .attr("x", -(height / 2))
     .attr("y", -80)
@@ -126,7 +127,7 @@ var obeseLabel = ylabelsGroup.append("text")
 circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
 
   // x axis labels event listener
-xlabelsGroup.selectAll("text")
+xLabelsGroup.selectAll("text")
     .on("click", function() {
     // get value of selection
 var value = d3.select(this).attr("value");
@@ -145,7 +146,7 @@ var value = d3.select(this).attr("value");
       circlesXY = renderXCircles(circlesXY, xLinearScale, chosenXAxis);
 
       // updates circles text with new x values
-      circlesText = renderXText(circlesText, xLinearScale, chosenXAxis);
+      circleText = renderXText(circleText, xLinearScale, chosenXAxis);
 
       // updates tooltips with new info
       circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
@@ -188,7 +189,7 @@ var value = d3.select(this).attr("value");
   });
 
   // y axis labels event listener
-ylabelsGroup.selectAll("text")
+yLabelsGroup.selectAll("text")
     .on("click", function() {
     // get value of selection
     var value = d3.select(this).attr("value");
@@ -207,7 +208,7 @@ ylabelsGroup.selectAll("text")
       circlesXY = renderYCircles(circlesXY, yLinearScale, chosenYAxis);
 
       // updates circles text with new y values
-      circlesText = renderYText(circlesText, yLinearScale, chosenYAxis);
+      circleText = renderYText(circleText, yLinearScale, chosenYAxis);
 
       // updates tooltips with new info
       circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
